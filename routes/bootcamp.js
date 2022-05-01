@@ -1,14 +1,15 @@
 const express = require('express');
 const router = express.Router()
-const {getBootCamps,createBootcamp ,getSinglBootCamps,updateBootcamp,deleteBootcamp} = require('../controller/bootcamp')
+const {getBootCamps,createBootcamp ,getSinglBootCamps,updateBootcamp,deleteBootcamp} = require('../controller/bootcamp') //cnrollers
 
 router.route("/").get(getBootCamps).post(createBootcamp)
 router.route("/:id").get(getSinglBootCamps).put(updateBootcamp).delete(deleteBootcamp);
 
+// ====or=====
 // router.get("/:id", (req, res) => {
 //     res.status(200).send({sucess: true , msg:`get single bootcamps ${req.params.id}`});
 // })
-
+ 
 // router.post("/", (req, res) => {
 //     res.status(200).send({sucess: true , msg:"create new bootcamps"});
 // })
