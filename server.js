@@ -1,12 +1,12 @@
 const express = require('express');
-const dotenv = require('dotenv');
+require('dotenv').config()
 const connectDB = require("./config/db")
 const {logger} = require("./middleware/logger") //coustom
 const morgan = require("morgan")
 
 const bootcamps  = require("./routes/bootcamp"); //Route file
 
-dotenv.config({path:"./config/config.env"}) //load env file 
+// dotenv.config({path:"/.env"}) //load env file 
 
 //Connect to data base 
 connectDB();
@@ -31,7 +31,7 @@ const server = app.listen(
 )  
 
 //handle unhandled rejection 
-process.on("unhandledRejection"), (err, promise)=>{
-    console.log(`Error: ${err.message}`);
-    server.close(()=>process.exit(1))
-}
+// process.on("unhandledRejection"), (err, promise)=>{
+//     console.log(`Error: ${err.message}`);
+//     server.close(()=>process.exit(1))
+// }
