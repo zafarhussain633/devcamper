@@ -17,7 +17,7 @@ if(process.env.NODE_ENV ==="development"){ //it will only run in devlopement
 }
 
 
-app.use(logger); //coustom logger
+app.use(logger); //coustom logger                                                                       
 app.use("/api/v1/bootcamps" , bootcamps)
 
 
