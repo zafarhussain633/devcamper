@@ -6,8 +6,6 @@ const morgan = require("morgan")
 
 const bootcamps  = require("./routes/bootcamp"); //Route file
 
-// dotenv.config({path:"/.env"}) //load env file 
-
 //Connect to data base 
 connectDB();
 
