@@ -1,6 +1,6 @@
-const express = require('express');
-const router = express.Router()
-const {getBootCamps,createBootcamp ,getSinglBootCamps,updateBootcamp,deleteBootcamp} = require('../controller/bootcamp') //cnrollers
+import {Router} from 'express';
+const router = Router()
+import {getBootCamps,createBootcamp ,getSinglBootCamps,updateBootcamp,deleteBootcamp} from '../controller/bootcamp.js' //cnrollers
 
 router.route("/").get(getBootCamps).post(createBootcamp)
 router.route("/:id").get(getSinglBootCamps).put(updateBootcamp).delete(deleteBootcamp);
@@ -22,4 +22,4 @@ router.route("/:id").get(getSinglBootCamps).put(updateBootcamp).delete(deleteBoo
 //     res.status(200).send({sucess: true , msg:`delete bootcamps ${req.params.id}`});
 // })
 
-module.exports = router
+export  {router}

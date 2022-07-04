@@ -1,10 +1,9 @@
-const express = require('express');
-require('dotenv').config()
-const connectDB = require("./config/db")
-const {logger} = require("./middleware/logger") //coustom
-const morgan = require("morgan")
-
-const bootcamps  = require("./routes/bootcamp"); //Route file
+import express from "express"
+import 'dotenv/config'
+import connectDB from "./config/db.js"
+import {logger} from "./middleware/logger.js" //coustom
+import morgan from "morgan"
+import {router} from "./routes/bootcamp.js" //Route file
 
 //Connect to data base 
 connectDB();
@@ -18,7 +17,7 @@ if(process.env.NODE_ENV ==="development"){ //it will only run in devlopement
 
 
 app.use(logger); //coustom logger                                                                       
-app.use("/api/v1/bootcamps" , bootcamps)
+app.use("/api/v1/bootcamps" , router)
 
 
 const PORT =  process.env.PORT || 5000;

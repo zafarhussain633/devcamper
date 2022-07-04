@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "dev camper api ",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "start": "NODE_ENV=production node server",
     "dev": "nodemon server",
