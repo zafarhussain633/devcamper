@@ -3,8 +3,7 @@
 // @route:  GET  /api/v1/bootcamps
 // @access: public   
 export const getBootCamps=(req,res, next)=>{
-  console.log("home page")
-  res.status(200).json({sucess:true, msg:"show all bootcamps", middleware:req.hello})
+  res.status(200).json({sucess:true, msg:"show all bootcamps", data:{}, middleware:req.hello})
 }
 
 
@@ -38,3 +37,8 @@ export const updateBootcamp=(req,res, next)=>{
 export const deleteBootcamp=(req,res, next)=>{
     res.status(200).json({sucess:true, msg:`delete single bootcamp ${req.params.id}`})
   }
+
+
+export const userLogin=(req,res,next)=>{
+  console.lo
+}

@@ -1,9 +1,10 @@
 import {Router} from 'express';
 const router = Router()
-import {getBootCamps,createBootcamp ,getSinglBootCamps,updateBootcamp,deleteBootcamp} from '../controller/bootcamp.js' //cnrollers
+import {getBootCamps,createBootcamp ,getSinglBootCamps,updateBootcamp,deleteBootcamp,userLogin} from '../controller/bootcamp.js' //cnrollers
 
 router.route("/").get(getBootCamps).post(createBootcamp)
 router.route("/:id").get(getSinglBootCamps).put(updateBootcamp).delete(deleteBootcamp);
+router.route("/login").get(userLogin)
 
 // ====or=====
 // router.get("/:id", (req, res) => {
