@@ -5,6 +5,7 @@
 exports.getBootCamps=(req,res, next)=>{
   console.log("home page")
   res.status(200).json({sucess:true, msg:"show all bootcamps", middleware:req.hello})
+  
 }
 
 

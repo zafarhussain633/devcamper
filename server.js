@@ -6,7 +6,6 @@ const morgan = require("morgan")
 
 const bootcamps  = require("./routes/bootcamp"); //Route file
 
-// dotenv.config({path:"/.env"}) //load env file 
 
 //Connect to data base 
 connectDB();
@@ -30,8 +29,8 @@ const server = app.listen(
     console.log("server running on port:"+ PORT)
 )  
 
-//handle unhandled rejection 
-// process.on("unhandledRejection"), (err, promise)=>{
-//     console.log(`Error: ${err.message}`);
-//     server.close(()=>process.exit(1))
-// }
+// handle unhandled rejection 
+process.on("unhandledRejection"), (err, promise)=>{
+    console.log(`Error: ${err.message}`);
+    server.close(()=>process.exit(1))
+}
