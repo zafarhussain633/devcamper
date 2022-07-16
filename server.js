@@ -6,7 +6,6 @@ const morgan = require("morgan")
 
 const bootcamps  = require("./routes/bootcamp"); //Route file
 
-
 //Connect to data base 
 connectDB();
 
