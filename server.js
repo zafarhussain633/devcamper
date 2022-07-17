@@ -1,25 +1,32 @@
-const express = require('express');
-require('dotenv').config()
-const connectDB = require("./config/db")
-const {logger} = require("./middleware/logger") //coustom
-const morgan = require("morgan")
-
-const bootcamps  = require("./routes/bootcamp"); //Route file
+import express from "express"
+import 'dotenv/config'
+import connectDB from "./config/db.js"
+import {logger} from "./middleware/logger.js" //coustom
+import morgan from "morgan"
+import {router} from "./routes/bootcamp.js" //Route file
+import cors from "cors"
+import errorHadler from "./middleware/error.js"
 
 //Connect to data base 
 connectDB();
 
-
 const app = express();
+
+//Body parser for req.body
+app.use(express.json())
+
+
 
 if(process.env.NODE_ENV ==="development"){ //it will only run in devlopement
     app.use(morgan("dev")) //from morgan third party loggger
 }
 
+app.use(cors());
+app.use(logger); //coustom logger                                                                       
+app.use("/api/v1/bootcamps" , router)
+app.use(errorHadler);
 
-app.use(logger); //coustom logger
-app.use("/api/v1/bootcamps" , bootcamps)
-
+// app.use(asyncHandler)
 
 const PORT =  process.env.PORT || 5000;
 
@@ -28,8 +35,8 @@ const server = app.listen(
     console.log("server running on port:"+ PORT)
 )  
 
-// handle unhandled rejection 
-process.on("unhandledRejection"), (err, promise)=>{
-    console.log(`Error: ${err.message}`);
-    server.close(()=>process.exit(1))
-}
+//handle unhandled rejection 
+process.on("unhandledRejection", (err, promise)=>{
+    console.log(`Error: ${err}`);
+    server.close(()=>process.exit(1)) //cose server and exit
+})
