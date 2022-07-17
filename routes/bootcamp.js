@@ -4,7 +4,7 @@ import {getBootCamps,createBootcamp ,getSinglBootCamps,updateBootcamp,deleteBoot
 
 router.route("/").get(getBootCamps).post(createBootcamp)
 router.route("/:id").get(getSinglBootCamps).put(updateBootcamp).delete(deleteBootcamp);
-router.route("/login").get(userLogin)
+router.route("/login").post(userLogin)
 
 // ====or=====
 // router.get("/:id", (req, res) => {
