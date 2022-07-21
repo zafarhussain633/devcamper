@@ -1,6 +1,8 @@
 import BootCamps from "../models/Bootcamp.js"
 import ErrorResponse from "../util/errorResponse.js"
 import asyncHandler from "../util/asyncHandler.js"
+
+
 // desc:    Get all bootcaps
 // @route:  GET  /api/v1/bootcamps
 // @access: public   
@@ -64,6 +66,7 @@ export const deleteBootcamp= asyncHandler(async(req,res, next)=>{
 })
 
 
-export const userLogin=(req,res,next)=>{
+export const userLogin=async (req,res,next)=>{
+
   res.status(200).json({sucess:true, msg:`development under processs`}) 
 }

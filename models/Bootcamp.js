@@ -1,5 +1,6 @@
 import mongoose  from "mongoose";
 import slugify from "slugify";
+import getGeolocation from "../helpers/mapquest.js";
 const BootCampSchema = new mongoose.Schema({
     name: {
         type:String,
@@ -41,25 +42,25 @@ const BootCampSchema = new mongoose.Schema({
 
     },
 
-    // location :{
+    location :{
        
-    //     type: {
-    //         type: String, // Don't do `{ location: { type: String } }`
-    //         enum: ['Point'], // 'location.type' must be 'Point'
-    //         required: true
-    //       },
-    //       coordinates: {
-    //         type: [Number],
-    //         required: true,
-    //         index: '2dsphere'
-    //       },
-    //       formattedAddress: String,
-    //       street:String,
-    //       city:String,
-    //       state: String,
-    //       zipcode:String,
-    //       country:String
-    // },
+        // type: {
+        //     type: String, // Don't do `{ location: { type: String } }`
+        //     enum: ['Point'], // 'location.type' must be 'Point'
+        //     required: true
+        // },
+        //   coordinates: {
+        //     type: [Number],
+        //     required: true,
+        //     index: '2dsphere'
+        //   },
+          formattedAddress: String,
+          street:String,
+          city:String,
+          state: String,
+          zipcode:String,
+          country:String
+    },
 
     careers: {
         type:[String],
@@ -108,13 +109,26 @@ const BootCampSchema = new mongoose.Schema({
 }
 )
 
-BootCampSchema.pre("save",function(next){
+BootCampSchema.pre("save",function (next){
    this.slug =  slugify(this.name,{
     lower: true,
     trim: true,
     replacement: '-',  
    })
-    next();
+   next();
+})
+
+BootCampSchema.pre("save",async function(next){
+   let response = await getGeolocation(this.address)
+    this.location= {
+        formattedAddress: response.formattedAddress,
+        street:response.street,
+        city:response.city,
+        state: response.state,
+        zipcode:response.zipcode,
+        country:response.country,
+   }
+   next();
 })
 
 
