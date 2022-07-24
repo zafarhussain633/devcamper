@@ -38,28 +38,30 @@ const BootCampSchema = new mongoose.Schema({
     address: {
         //Geo json 
       type:String,
-      required:[true, "please addd address"]
+      required:[true, "please addd address"],
+      minlength:[20 , "Please add address at least 20 characters"],
+      maxlength:[200 , "Address should  not exceed 200   characters"]
+      
 
     },
 
     location :{
        
-        // type: {
-        //     type: String, // Don't do `{ location: { type: String } }`
-        //     enum: ['Point'], // 'location.type' must be 'Point'
-        //     required: true
-        // },
-        //   coordinates: {
-        //     type: [Number],
-        //     required: true,
-        //     index: '2dsphere'
-        //   },
+        type: {
+            type: String, // Don't do `{ location: { type: String } }`
+            enum: ['Point'], // 'location.type' must be 'Point'
+        },
+        coordinates: {
+            type: [Number],
+            index: '2dsphere'
+          },
           formattedAddress: String,
           street:String,
           city:String,
           state: String,
           zipcode:String,
-          country:String
+          country:String,
+          countryCode:String,
     },
 
     careers: {
@@ -121,13 +123,18 @@ BootCampSchema.pre("save",function (next){
 BootCampSchema.pre("save",async function(next){
    let response = await getGeolocation(this.address)
     this.location= {
-        formattedAddress: response.formattedAddress,
-        street:response.street,
-        city:response.city,
-        state: response.state,
-        zipcode:response.zipcode,
-        country:response.country,
+        type:"Point",
+        coordinates:[response[0].latitude,response[0].longitude],
+        formattedAddress: response[0].formattedAddress,
+        street:response[0].streetName,
+        city:response[0].city,
+        state: response[0].state,
+        zipcode:response[0].zipcode,
+        country:response[0].country,
+        countryCode:response[0].countryCode,
    }
+
+   this.address=undefined; // this will not addd addres in database
    next();
 })
 

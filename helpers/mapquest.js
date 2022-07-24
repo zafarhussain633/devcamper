@@ -1,11 +1,8 @@
 import  NodeGeocoder  from 'node-geocoder';
 
 const options = {
-    provider: 'mapquest',
-  
-    // Optional depending on the providers
-    // fetch: customFetchImplementation,
-    apiKey: process.env.MAPQUEST_KEY, // for Mapquest, OpenCage, Google Premier
+    provider: process.env.GEOCODE_PROVIDER,
+    apiKey: process.env.GEOCODER_API_KEY, // for Mapquest, OpenCage, Google Premier
     formatter: null // 'gpx', 'string', ...
   };
 
@@ -13,7 +10,7 @@ const options = {
   const geocoder = NodeGeocoder(options);
 
   const getGeolocation =async  (address)=>{
-    const res = await geocoder.geocode(address);
+    const res = await geocoder.geocode(address); 
     return res;
   }
 

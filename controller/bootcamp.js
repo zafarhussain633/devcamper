@@ -1,7 +1,9 @@
 import BootCamps from "../models/Bootcamp.js"
 import ErrorResponse from "../util/errorResponse.js"
 import asyncHandler from "../util/asyncHandler.js"
-
+import getGeolocation from "../helpers/mapquest.js"
+import Bootcamp from "../models/Bootcamp.js"
+import { response } from "express"
 
 // desc:    Get all bootcaps
 // @route:  GET  /api/v1/bootcamps
@@ -64,6 +66,37 @@ export const deleteBootcamp= asyncHandler(async(req,res, next)=>{
     }
     res.status(200).json({success: true , data:{} , msg:"bootcamp deleted Sucessfully"})
 })
+
+
+
+//@desc: get bootcaps with a radius
+//@route: GET /api/v1/bootcamps/radius/:zipcode/:distance
+//access: Private
+
+export const getBootcampsInRadius= asyncHandler(async(req,res,next)=>{
+    const {zipcode, distance} = req.params
+    const loc = await getGeolocation(zipcode)
+
+    const lat = loc[0].latitude;
+    const long=loc[0].longitude;
+ 
+
+    //cal radius of earth
+    const earthRadius =6371
+    const radius = distance/earthRadius
+
+    const bootcamp = await Bootcamp.find({
+      location: {
+        $geoWithin: { $centerSphere: [ [ long, lat ], radius ] }
+      }
+    })
+    
+    res.status(200).json({success: true , count: bootcamp.length, data:bootcamp})
+
+});
+
+
+
 
 
 export const userLogin=async (req,res,next)=>{
