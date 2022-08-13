@@ -6,9 +6,11 @@ import Bootcamp from "../models/Bootcamp.js"
 import { response } from "express"
 
 // desc:    Get all bootcaps
-// @route:  GET  /api/v1/bootcamps
+// @route:  GET  /api/v1/bootcamps  
 // @access: public   
 export const getBootCamps= asyncHandler(async(req,res, next)=>{
+    const {query} = req.query;
+    console.log(query)
     const bootcamps = await BootCamps.find();
     res.status(200).json({success: true , data:bootcamps, count:bootcamps.length})
   
