@@ -9,11 +9,46 @@ import { response } from "express"
 // @route:  GET  /api/v1/bootcamps  
 // @access: public   
 export const getBootCamps= asyncHandler(async(req,res, next)=>{
-    const {query} = req.query;
-    console.log(query)
-    const bootcamps = await BootCamps.find();
-    res.status(200).json({success: true , data:bootcamps, count:bootcamps.length})
+    let {query} = req;
+    let advanceFilter = {...req.query}
+    
+    if(req.query.select || req.query.sort){
+      delete req.query.select
+      delete req.query.sort
+    }
+    
+    console.log(advanceFilter.select)
+
+
   
+
+    //query for finding particular bootcamps
+    let queryStr= JSON.stringify(query);
+    queryStr= JSON.parse(queryStr.replace(/\b(lt|lte|gt|gte|contain|in)\b/g, matchVal=>`$${matchVal}`));
+    query=  BootCamps.find(queryStr);
+
+    //selecting
+    if(advanceFilter.select){
+      let selectQuery = advanceFilter.select.replaceAll(",", " ");
+      query  = query.select(selectQuery)
+    }
+
+    //sorting
+    if(advanceFilter.sort){
+      let sortQuery = advanceFilter.sort.replaceAll(",", " ");
+      query  = query.sort(sortQuery)
+    }else{
+      query  = query.sort('createdAt')
+    }
+  
+    
+    const bootcamps =await query;
+
+    if(bootcamps.length===0){
+      next(new ErrorResponse(`Sorry, no BootCamps found`,404))
+    }
+
+    res.status(200).json({success: true , data:bootcamps, count:bootcamps.length})
 })
 
 
@@ -82,7 +117,6 @@ export const getBootcampsInRadius= asyncHandler(async(req,res,next)=>{
     const lat = loc[0].latitude;
     const long=loc[0].longitude;
  
-
     //cal radius of earth
     const earthRadius =6371
     const radius = distance/earthRadius
