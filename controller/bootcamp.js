@@ -9,15 +9,19 @@ import { response } from "express"
 // @route:  GET  /api/v1/bootcamps  
 // @access: public   
 export const getBootCamps= asyncHandler(async(req,res, next)=>{
+    let totalCount = await BootCamps.countDocuments();
     let {query} = req;
     let advanceFilter = {...req.query}
+  
     
-    if(req.query.select || req.query.sort){
+    if(req.query.select || req.query.sort||req.query.page||req.query.limit){
       delete req.query.select
       delete req.query.sort
+      delete req.query.page
+      delete req.query.limit
     }
     
-    console.log(advanceFilter.select)
+    console.log(advanceFilter)
 
 
   
@@ -40,15 +44,17 @@ export const getBootCamps= asyncHandler(async(req,res, next)=>{
     }else{
       query  = query.sort('createdAt')
     }
-  
+
+    //pagination
+    const page = parseInt(advanceFilter.page,10)||1 // here 10 is for convert string into number
+    const limit = parseInt(advanceFilter.limit,10) ||10  //if limit not mentioned by limit will be 10
+    const skip = (page -1) * limit
+    query = query.skip(skip).limit(limit);
     
+  
     const bootcamps =await query;
 
-    if(bootcamps.length===0){
-      next(new ErrorResponse(`Sorry, no BootCamps found`,404))
-    }
-
-    res.status(200).json({success: true , data:bootcamps, count:bootcamps.length})
+    res.status(200).json({success: true , data:bootcamps, total:totalCount})
 })
 
 
