@@ -1,11 +1,11 @@
 import {Router} from 'express';
-const router = Router()
+const bootcampRouter = Router()
 import {getBootCamps,createBootcamp ,getSinglBootCamps,updateBootcamp,deleteBootcamp,userLogin,getBootcampsInRadius} from '../controller/bootcamp.js' //cnrollers
 
-router.route("/").get(getBootCamps).post(createBootcamp)
-router.route("/:id").get(getSinglBootCamps).put(updateBootcamp).delete(deleteBootcamp);
-router.route("/radius/:zipcode/:distance").get(getBootcampsInRadius);
-router.route("/login").post(userLogin);
+bootcampRouter.route("/").get(getBootCamps).post(createBootcamp)
+bootcampRouter.route("/:id").get(getSinglBootCamps).put(updateBootcamp).delete(deleteBootcamp);
+bootcampRouter.route("/radius/:zipcode/:distance").get(getBootcampsInRadius);
+bootcampRouter.route("/login").post(userLogin);
 
 
 // ====or=====
@@ -25,4 +25,4 @@ router.route("/login").post(userLogin);
 //     res.status(200).send({sucess: true , msg:`delete bootcamps ${req.params.id}`});
 // })
 
-export  {router}
+export  {bootcampRouter}

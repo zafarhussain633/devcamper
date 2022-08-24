@@ -2,14 +2,13 @@ import BootCamps from "../models/Bootcamp.js"
 import ErrorResponse from "../util/errorResponse.js"
 import asyncHandler from "../util/asyncHandler.js"
 import getGeolocation from "../helpers/mapquest.js"
-import Bootcamp from "../models/Bootcamp.js"
-import { response } from "express"
 
 // desc:    Get all bootcaps
 // @route:  GET  /api/v1/bootcamps  
 // @access: public   
 export const getBootCamps= asyncHandler(async(req,res, next)=>{
-    let totalCount = await BootCamps.countDocuments();
+ 
+    let totalCount = await BootCamps.countDocuments(); //all bootcamps count 
     let {query} = req;
     let advanceFilter = {...req.query}
   
@@ -139,9 +138,6 @@ export const getBootcampsInRadius= asyncHandler(async(req,res,next)=>{
 
 
 
-
-
 export const userLogin=async (req,res,next)=>{
-
   res.status(200).json({sucess:true, msg:`development under processs`}) 
 }

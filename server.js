@@ -3,7 +3,7 @@ import 'dotenv/config'
 import connectDB from "./config/db.js"
 import {logger} from "./middleware/logger.js" //coustom
 import morgan from "morgan"
-import {router} from "./routes/bootcamp.js" //Route file
+import rootRouter from "./routes/index.js"
 import cors from "cors"
 import errorHadler from "./middleware/error.js"
 
@@ -23,7 +23,7 @@ if(process.env.NODE_ENV ==="development"){ //it will only run in devlopement
 
 app.use(cors());
 app.use(logger); //coustom logger                                                                       
-app.use("/api/v1/bootcamps" , router)
+app.use(rootRouter);
 app.use(errorHadler);
 
 // app.use(asyncHandler)
