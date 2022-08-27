@@ -19,11 +19,6 @@ export const getBootCamps= asyncHandler(async(req,res, next)=>{
       delete req.query.page
       delete req.query.limit
     }
-    
-    console.log(advanceFilter)
-
-
-  
 
     //query for finding particular bootcamps
     let queryStr= JSON.stringify(query);
@@ -102,10 +97,15 @@ export const updateBootcamp= asyncHandler( async(req,res, next)=>{
 // @route:  DELETE  /api/v1/bootcamps/:id
 // @access: private  
 export const deleteBootcamp= asyncHandler(async(req,res, next)=>{
-    const bootcamps =await BootCamps.findByIdAndDelete(req.params.id);
-    if(!bootcamps){ 
+    const bootcamp =await BootCamps.findById(req.params.id);
+
+    if(!bootcamp){ 
+     next(new ErrorResponse(`Failed to delete Bootcamp not found with id ${req.params.id}`))
      return res.status(400).json({success: false})
     }
+
+    bootcamp.remove();
+
     res.status(200).json({success: true , data:{} , msg:"bootcamp deleted Sucessfully"})
 })
 
