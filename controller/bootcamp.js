@@ -28,7 +28,7 @@ export const getBootCamps= asyncHandler(async(req,res, next)=>{
     //query for finding particular bootcamps
     let queryStr= JSON.stringify(query);
     queryStr= JSON.parse(queryStr.replace(/\b(lt|lte|gt|gte|contain|in)\b/g, matchVal=>`$${matchVal}`));
-    query=  BootCamps.find(queryStr);
+    query=  BootCamps.find(queryStr).populate("courses"); // al field of course model
 
     //selecting
     if(advanceFilter.select){
@@ -51,7 +51,7 @@ export const getBootCamps= asyncHandler(async(req,res, next)=>{
     query = query.skip(skip).limit(limit);
     
   
-    const bootcamps =await query;
+    const bootcamps =await query
 
     res.status(200).json({success: true , data:bootcamps, total:totalCount})
 })

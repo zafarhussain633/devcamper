@@ -1,6 +1,6 @@
 import {Router} from 'express';
 const bootcampRouter = Router()
-import { courseRouter } from './course.js'; //rerouting course
+import  courseRouter  from './course.js'; //rerouting course
 import {getBootCamps,createBootcamp ,getSinglBootCamps,updateBootcamp,deleteBootcamp,userLogin,getBootcampsInRadius} from '../controller/bootcamp.js' //cnrollers
 
 bootcampRouter.use("/:bootcampId/courses",courseRouter);
@@ -27,4 +27,4 @@ bootcampRouter.route("/login").post(userLogin);
 //     res.status(200).send({sucess: true , msg:`delete bootcamps ${req.params.id}`});
 // })
 
-export  {bootcampRouter}
+export  default bootcampRouter

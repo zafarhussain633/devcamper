@@ -107,9 +107,15 @@ const BootCampSchema = new mongoose.Schema({
     createdAt:{
         type : Date,
         default:Date.now
-    }
+    },
+},
+{
+    toJSON:{virtuals:true},  // for reverese population with virtual
+    toObject:{virtuals:true} // for reverese population with virtual
 }
 )
+
+
 
 BootCampSchema.pre("save",function (next){
    this.slug =  slugify(this.name,{
@@ -120,7 +126,7 @@ BootCampSchema.pre("save",function (next){
    next();
 })
 
-BootCampSchema.pre("save",async function(next){
+BootCampSchema.pre("save",async function(next){  
    let response = await getGeolocation(this.address)
     this.location= {
         type:"Point",
@@ -136,6 +142,14 @@ BootCampSchema.pre("save",async function(next){
 
    this.address=undefined; // this will not addd addres in database
    next();
+})
+
+// reverese population with vituals
+BootCampSchema.virtual('courses',{
+    ref:'Courses',
+    localField:"_id",
+    foreignField:"bootcamp",
+    justOne:false,
 })
 
 
