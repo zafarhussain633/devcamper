@@ -21,7 +21,7 @@ if(process.env.NODE_ENV ==="development"){ //it will only run in devlopement
 
 //middleware
 app.use(cors());         // it will allow all the originalUrl 
-app.use(logger);         //coustom logger                                                                       
+// app.use(logger);         //coustom logger                                                                       
 app.use(rootRouter);     // contain all routes
 app.use(errorHadler);    //for catching errors
 
