@@ -1,6 +1,6 @@
 import { Router } from "express";
 
-import { getCourses, getSingleCourse, addCourse, updateCourse } from "./../controller/course.js"
+import { getCourses, getSingleCourse, addCourse, updateCourse,deleteCourse } from "./../controller/course.js"
 
 const courseRouter = Router({ mergeParams: true });
 
@@ -10,7 +10,8 @@ courseRouter.route("/")
 
 courseRouter.route("/:id")
     .get(getSingleCourse)
-    .patch(updateCourse);
+    .patch(updateCourse)
+    .delete(deleteCourse)
 
 
 export default courseRouter

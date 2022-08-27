@@ -46,6 +46,7 @@ const getSingleCourse = asyncHandler(async (req, res, next) => {
 // @route:  POST /api/v1/bootcamps/:bootcampId/courses/add
 // @access: private
 const addCourse = asyncHandler(async (req, res, next) => {
+   
     const bootcampId = req.params.bootcampId;
     const payload = req.body;
 
@@ -54,7 +55,7 @@ const addCourse = asyncHandler(async (req, res, next) => {
     const bootcampAvail = await BootCamps.findById(bootcampId);
 
     if(!bootcampAvail){
-        next(new ErrorResponse(`no Bootcamp with id of ${bootcampId}`, 404))
+      return next(new ErrorResponse(`no Bootcamp with id of ${bootcampId}`, 404))
     }
 
     const course = await Courses.create(payload);
@@ -81,7 +82,7 @@ const updateCourse = asyncHandler(async (req, res, next) => {
     });
 
     if(!course){
-       return next(new ErrorResponse(`no Course found  with id of ${id}`, 404))
+       return next(new ErrorResponse(`no Course found  with id of ${id}`, 400))
     }
 
     res.status(200).json(
@@ -93,5 +94,18 @@ const updateCourse = asyncHandler(async (req, res, next) => {
     )
 });
 
+// desc:    delete course with course id
+// @route:  delete  /api/v1/courses/:id
+// @access: private
+const deleteCourse = asyncHandler( async(req,res,next)=>{
+  const {id} = req.params
+  const course = await Courses.findByIdAndDelete(id);
 
-export { getCourses, getSingleCourse, addCourse,updateCourse }
+  if(!course){
+    return next(new ErrorResponse(`Failed to delete course or already deleted  with id ${id}`, 400))
+  }
+
+  res.status(200).json({success: true , data:{} , msg:"Course deleted Sucessfully"})
+})
+
+export { getCourses, getSingleCourse, addCourse,updateCourse ,deleteCourse}
