@@ -7,22 +7,18 @@ import asyncHandler from "../util/asyncHandler.js"
 // @route:  GET  /api/v1/courses and  /api/v1/bootcamps/:bootcampId/courses 
 // @access: public 
 const getCourses = asyncHandler(async (req, res) => {
+
     let { bootcampId } = req.params
-    let query;
-
+    
     if (bootcampId) {
-        console.log("yeas")
-        query = Courses.find({ bootcamp: bootcampId })
-    } else {
-        query = Courses.find()
-    }
-
-    const courses = await query.populate({
-        path: "bootcamp",
-        select: "name id"
-    });
-    // const courses  =  await query.populate("bootcamp", "name id"); // another shorthand way
-    res.status(200).json({ status: "success", count: courses.length, data: courses })
+        const courses = await Courses.find({ bootcamp: bootcampId }).populate({
+            path: "bootcamp",
+            select: "name id"
+        });
+        return res.status(200).json({ status: "success", count: courses.length, data: courses })
+    } 
+    
+    return res.status(200).json(res.advanceResult)
 
 })
 

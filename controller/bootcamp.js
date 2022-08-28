@@ -7,48 +7,7 @@ import getGeolocation from "../helpers/mapquest.js"
 // @route:  GET  /api/v1/bootcamps  
 // @access: public   
 export const getBootCamps= asyncHandler(async(req,res, next)=>{
- 
-    let totalCount = await BootCamps.countDocuments(); //all bootcamps count 
-    let {query} = req;
-    let advanceFilter = {...req.query}
-  
-    
-    if(req.query.select || req.query.sort||req.query.page||req.query.limit){
-      delete req.query.select
-      delete req.query.sort
-      delete req.query.page
-      delete req.query.limit
-    }
-
-    //query for finding particular bootcamps
-    let queryStr= JSON.stringify(query);
-    queryStr= JSON.parse(queryStr.replace(/\b(lt|lte|gt|gte|contain|in)\b/g, matchVal=>`$${matchVal}`));
-    query=  BootCamps.find(queryStr).populate("courses"); // al field of course model
-
-    //selecting
-    if(advanceFilter.select){
-      let selectQuery = advanceFilter.select.replaceAll(",", " ");
-      query  = query.select(selectQuery)
-    }
-
-    //sorting
-    if(advanceFilter.sort){
-      let sortQuery = advanceFilter.sort.replaceAll(",", " ");
-      query  = query.sort(sortQuery)
-    }else{
-      query  = query.sort('createdAt')
-    }
-
-    //pagination
-    const page = parseInt(advanceFilter.page,10)||1 // here 10 is for convert string into number
-    const limit = parseInt(advanceFilter.limit,10) ||10  //if limit not mentioned by limit will be 10
-    const skip = (page -1) * limit
-    query = query.skip(skip).limit(limit);
-    
-  
-    const bootcamps =await query
-
-    res.status(200).json({success: true , data:bootcamps, total:totalCount})
+    res.status(200).json(res.advanceResult)
 })
 
 
@@ -126,7 +85,7 @@ export const getBootcampsInRadius= asyncHandler(async(req,res,next)=>{
     const earthRadius =6371
     const radius = distance/earthRadius
 
-    const bootcamp = await Bootcamp.find({
+    const bootcamp = await BootCamps.find({
       location: {
         $geoWithin: { $centerSphere: [ [ long, lat ], radius ] }
       }
@@ -136,6 +95,20 @@ export const getBootcampsInRadius= asyncHandler(async(req,res,next)=>{
 
 });
 
+
+export const uploadPhoto =asyncHandler( async (req, res,next) => {
+
+  const {id} = req.params;
+
+  if(!req.file){
+    return next(new ErrorResponse(`please add image`,404 ))
+  }
+
+  let bootcamp = await BootCamps.findOneAndUpdate(id,{photo:req.file.filename},{new :true, runValidators:true})
+   
+  res.status(200).json({success: true ,data:bootcamp.photo, msg: "image uploaded successfully"})
+
+})
 
 
 export const userLogin=async (req,res,next)=>{
