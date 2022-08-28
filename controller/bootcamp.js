@@ -96,6 +96,9 @@ export const getBootcampsInRadius= asyncHandler(async(req,res,next)=>{
 });
 
 
+//@desc: upload or update bootcamp photo
+//@route: GET /api/v1/bootcamps/:id/photo-upload
+//access: Private
 export const uploadPhoto =asyncHandler( async (req, res,next) => {
 
   const {id} = req.params;
