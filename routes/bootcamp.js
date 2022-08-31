@@ -5,7 +5,7 @@ import  courseRouter  from './course.js'; //rerouting course
 import BootCamps from "./../models/Bootcamp.js"
 import advanceResult from "./../middleware/advanceResult.js"; 
 
-import {getBootCamps,createBootcamp ,getSinglBootCamps,updateBootcamp,deleteBootcamp,userLogin,getBootcampsInRadius,uploadPhoto} from '../controller/bootcamp.js' //cnrollers
+import {getBootCamps,createBootcamp ,getSinglBootCamps,updateBootcamp,deleteBootcamp,getBootcampsInRadius,uploadPhoto} from '../controller/bootcamp.js' //cnrollers
 
 
 bootcampRouter.use("/:bootcampId/courses",courseRouter);
@@ -22,8 +22,6 @@ bootcampRouter.route("/:id")
 bootcampRouter.route("/radius/:zipcode/:distance")
 .get(getBootcampsInRadius);
 
-bootcampRouter.route("/login")
-.post(userLogin); 
 
 bootcampRouter.route("/:id/photo-upload")
 .put(upload.single("image"),uploadPhoto); //
