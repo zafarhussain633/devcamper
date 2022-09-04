@@ -29,6 +29,15 @@ export const getSinglBootCamps= asyncHandler(async(req,res, next)=>{
 // @route:  POST  /api/v1/bootcamps/:id
 // @access: private  
 export const createBootcamp= asyncHandler(async(req,res, next)=>{
+      const {id}= req.user  //here user.id is coming from protect middleware
+      req.body.user = id   
+    
+      const isUserAddedBootcamp = await BootCamps.findOne({user:id})
+      console.log(req.user.role,"(req.user.role")
+      if(req.user.role !== 'admin' && isUserAddedBootcamp){
+          return next(new ErrorResponse(`user with id ${id} only allow to create 1 bootcamp`,404))
+      }
+
       const bootcamp = await BootCamps.create(req.body);
       res.status(200).json({
         sucess:true,
@@ -40,14 +49,25 @@ export const createBootcamp= asyncHandler(async(req,res, next)=>{
 // @route:  PUT  /api/v1/bootcamps/:id
 // @access: private  
 export const updateBootcamp= asyncHandler( async(req,res, next)=>{
-    const bootcamps = await BootCamps.findByIdAndUpdate(req.params.id, req.body,{
-      new:true, // it will return updated data
-      runValidators:true
-    });
+    const requestId  = req.user.id
+    let bootcamps = await BootCamps.findById(req.params.id);
 
     if(!bootcamps){ 
      return next(new ErrorResponse(`Bootcamps not found with id ${req.params.id}`,404 ))
     }
+
+    //check ownership of bootcamps
+    const storedBootcampId = bootcamps.user.toString();  //bootcamp.user return as object thats converting it into string
+    const requestedBootcampId = requestId
+    if((requestedBootcampId!==storedBootcampId && req.user.role !== 'admin')){
+     return next(new ErrorResponse(`user id ${requestedBootcampId} is not autherize to update Bootcamp with id ${req.params.id}`,401))
+    }
+    
+    bootcamps = await BootCamps.findByIdAndUpdate(req.params.id, req.body,{
+      new:true, // it will return updated data
+      runValidators:true
+    })
+  
     res.status(200).json({success: true , data:bootcamps , msg:"bootcamp updated Sucessfully"})
 })
 
@@ -56,13 +76,22 @@ export const updateBootcamp= asyncHandler( async(req,res, next)=>{
 // @route:  DELETE  /api/v1/bootcamps/:id
 // @access: private  
 export const deleteBootcamp= asyncHandler(async(req,res, next)=>{
+    const requestId = req.user.id  // here request id is coming from protect middleware
     const bootcamp =await BootCamps.findById(req.params.id);
+    
+    console.log(bootcamp,"bootcamp");
 
     if(!bootcamp){ 
-     next(new ErrorResponse(`Failed to delete Bootcamp not found with id ${req.params.id}`))
-     return res.status(400).json({success: false})
+    return  next(new ErrorResponse(`Failed to delete Bootcamp or not found with id ${req.params.id}`,400))
     }
-
+   
+    //check ownership of bootcamps
+    const storedBootcampId = bootcamp.user.toString();  //bootcamp.user return as object thats converting it into string
+    const requestedBootcampId = requestId
+    if((requestedBootcampId!==storedBootcampId && req.user.role !== 'admin')){
+     return next(new ErrorResponse(`user id ${requestedBootcampId} is not autherize to delete Bootcamp with id ${req.params.id}`,401))
+    }
+    
     bootcamp.remove();
 
     res.status(200).json({success: true , data:{} , msg:"bootcamp deleted Sucessfully"})

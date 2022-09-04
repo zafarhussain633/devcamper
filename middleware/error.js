@@ -2,7 +2,6 @@ import ErrorResponse from "../util/errorResponse.js"
 
 const errorHadler  = (err, req, res, next)=>{
     let error =err
-
     //Mongoose bad objectid
     if(err.name === "CastError"){
         const message = `bootcamp not found with id ${error.value}`

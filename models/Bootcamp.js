@@ -108,6 +108,11 @@ const BootCampSchema = new mongoose.Schema({
         type : Date,
         default:Date.now
     },
+    user:{
+        type:mongoose.Schema.ObjectId,
+        ref: 'User',  //will check is this course associated with any bootcamp
+        required: [true,"please add user associated with this bootcamp"],
+    },
 },
 {
     toJSON:{virtuals:true},  // for reverese population with virtual

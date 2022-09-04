@@ -3,7 +3,6 @@ import 'dotenv/config'
 import connectDB from "./config/db.js"
 import {logger} from "./middleware/logger.js" //coustom
 import morgan from "morgan"
-import  bodyParser from 'body-parser';
 import rootRouter from "./routes/index.js"
 import cors from "cors"
 import errorHadler from "./middleware/error.js"
@@ -15,7 +14,6 @@ const app = express();
 
 //Body parser for req.body
 app.use(express.json())
-app.use(bodyParser.urlencoded({ extended: true }));
 
 // set static path
 app.use(express.static('public'));

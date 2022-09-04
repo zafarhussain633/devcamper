@@ -1,6 +1,7 @@
 import mongoose  from "mongoose";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken"
+import ErrorResponse from "./../util/errorResponse.js"
 
 const userSchema = new mongoose.Schema({
     name :{
@@ -46,6 +47,17 @@ userSchema.pre("save",function(next){
  next();
 });
 
+// for checking emal exit or not 
+userSchema.post('save', function(error, doc, next) {
+    console.log(error);
+    if (error.code === 11000) {
+        next(new ErrorResponse("Email already exists",400));
+    } else {
+      next();
+    }
+  });
+
+
 userSchema.methods.getSignedJwtToken = async function(){
     const token =  jwt.sign(
           {id:this.id},
@@ -56,7 +68,6 @@ userSchema.methods.getSignedJwtToken = async function(){
 }
 
 userSchema.methods.matchPassword = async function(password){        
-    console.log(password,this.password)
  const isMatch = await bcrypt.compare(password,this.password);
  return isMatch;
 }
