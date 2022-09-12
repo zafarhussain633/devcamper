@@ -33,7 +33,7 @@ export const createBootcamp= asyncHandler(async(req,res, next)=>{
       req.body.user = id   
     
       const isUserAddedBootcamp = await BootCamps.findOne({user:id})
-      console.log(req.user.role,"(req.user.role")
+
       if(req.user.role !== 'admin' && isUserAddedBootcamp){
           return next(new ErrorResponse(`user with id ${id} only allow to create 1 bootcamp`,404))
       }
