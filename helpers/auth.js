@@ -9,7 +9,7 @@ const getCookiesExpireTime = () => {
 
 const generateOtp = () => {
   let otp = Math.floor(Math.random()*9000+1000); // will gegrate 4 digit
-  return otp;
+  return otp.toString();
 }
 
 const sendEmail = async (option) => {
@@ -39,7 +39,8 @@ const sendEmail = async (option) => {
 const sendMailUsingSendGrid = async (msg) => {
   sgMail.setApiKey(process.env.SENDGRID_API_KEY)
   try {
-    await sgMail.send(msg)
+    let res = await sgMail.send(msg)
+    console.log(res)    
   } catch (err) {
     console.error(err)
   }

@@ -96,7 +96,7 @@ const resetPassword = asyncHandler(async (req, res, next) => {
             name: "dev camper || reset password",
             email: "devcyper@gmail.com"
         },
-        to: "zafarhussain6333@gmail.com",
+        to: user.email,
         subject: "Reset your password",
         html: `<div>Hi, ${user.email}
         <h4 style="text-align:center">Use Below OTP to reset password</h4>
@@ -106,8 +106,8 @@ const resetPassword = asyncHandler(async (req, res, next) => {
     }
 
 
-    //   await sendEmail(msg);
-    await sendMailUsingSendGrid(msg);
+      //await sendEmail(msg);
+      await sendMailUsingSendGrid(msg);
     res.status(200).json({ success: true, msg: "OTP sent to email" })
 
 })

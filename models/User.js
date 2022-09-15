@@ -43,6 +43,16 @@ const userSchema = new mongoose.Schema({
 });
 
 
+// for checking emal exit or not 
+userSchema.post('save', function (error, doc, next) {
+  if (error.code === 11000) {
+    next(new ErrorResponse("Email already exists", 400));
+  } else {
+    next();
+  }
+});
+
+
 userSchema.pre("save", function async (next) {
 
   if(!this.isModified("password")){
@@ -54,16 +64,6 @@ userSchema.pre("save", function async (next) {
 });
 
 
-
-// for checking emal exit or not 
-userSchema.post('save', function (error, doc, next) {
-  if (error.code === 11000) {
-    next(new ErrorResponse("Email already exists", 400));
-  } else {
-    next();
-  }
-});
-
 userSchema.methods.getSignedJwtToken = async function () {
   const token = jwt.sign(
     { id: this.id },
@@ -74,7 +74,7 @@ userSchema.methods.getSignedJwtToken = async function () {
 }
 
 userSchema.methods.setResetToken =  async function () {
-  let otp = generateOtp().toString();
+  let otp = generateOtp();
   const hashResetToken = bcrypt.hashSync(otp,10); 
   this.resetPasswordToken =  hashResetToken; // adding encrypted to database for security.
   this.resetPasswordExpires = Date.now()+10*60*1000;
