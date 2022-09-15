@@ -87,10 +87,7 @@ userSchema.methods.matchPassword = async function (password) {
 }
 
 userSchema.methods.matchResetToken = async function (otp) {
-  const isMatch = await bcrypt.compare(otp,this.resetPasswordToken);
-  if(isMatch) {
-    this.resetOtpVerified=true;
-  }
+  const isMatch = await bcrypt.compare(otp,this.resetPasswordToken); 
   return isMatch;   
 }
 
