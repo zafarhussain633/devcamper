@@ -107,9 +107,23 @@ const BootCampSchema = new mongoose.Schema({
     createdAt:{
         type : Date,
         default:Date.now
-    }
+    },
+    user:{
+        type:mongoose.Schema.ObjectId,
+        ref: 'User',  //will check is this course associated with any bootcamp
+        required: [true,"please add user associated with this bootcamp"],
+    },
+},
+{
+    toJSON:{virtuals:true},  // for reverese population with virtual
+    toObject:{virtuals:true} // for reverese population with virtual
 }
 )
+
+BootCampSchema.pre("remove", async function(next){  // this will delete all the courses associated with this bootcamp
+   await this.model("Courses").deleteMany({bootcamp:this.id})
+   next();
+})
 
 BootCampSchema.pre("save",function (next){
    this.slug =  slugify(this.name,{
@@ -120,7 +134,7 @@ BootCampSchema.pre("save",function (next){
    next();
 })
 
-BootCampSchema.pre("save",async function(next){
+BootCampSchema.pre("save",async function(next){  
    let response = await getGeolocation(this.address)
     this.location= {
         type:"Point",
@@ -136,6 +150,14 @@ BootCampSchema.pre("save",async function(next){
 
    this.address=undefined; // this will not addd addres in database
    next();
+})
+
+// reverese population with vituals
+BootCampSchema.virtual('courses',{
+    ref:'Courses',
+    localField:"_id",
+    foreignField:"bootcamp",
+    justOne:false,
 })
 
 

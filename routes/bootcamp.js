@@ -1,27 +1,31 @@
 import {Router} from 'express';
-const router = Router()
-import {getBootCamps,createBootcamp ,getSinglBootCamps,updateBootcamp,deleteBootcamp,userLogin,getBootcampsInRadius} from '../controller/bootcamp.js' //cnrollers
+const bootcampRouter = Router()
+import {upload} from "./../middleware/photoUpload.js"
+import  courseRouter  from './course.js'; //rerouting course
+import BootCamps from "./../models/Bootcamp.js"
+import advanceResult from "./../middleware/advanceResult.js"; 
+import {protect,authorize} from "./../middleware/auth.js"
 
-router.route("/").get(getBootCamps).post(createBootcamp)
-router.route("/:id").get(getSinglBootCamps).put(updateBootcamp).delete(deleteBootcamp);
-router.route("/login").post(userLogin)
-router.route("/radius/:zipcode/:distance").get(getBootcampsInRadius);
+import {getBootCamps,createBootcamp ,getSinglBootCamps,updateBootcamp,deleteBootcamp,getBootcampsInRadius,uploadPhoto} from '../controller/bootcamp.js' //cnrollers
 
-// ====or=====
-// router.get("/:id", (req, res) => {
-//     res.status(200).send({sucess: true , msg:`get single bootcamps ${req.params.id}`});
-// })
- 
-// router.post("/", (req, res) => {
-//     res.status(200).send({sucess: true , msg:"create new bootcamps"});
-// })
 
-// router.put("/:id", (req, res) => {
-//     res.status(200).send({sucess: true , msg:`updae bootcamps ${req.params.id}`});
-// })
- 
-// router.delete("/:id", (req, res) => {
-//     res.status(200).send({sucess: true , msg:`delete bootcamps ${req.params.id}`});
-// })
+bootcampRouter.use("/:bootcampId/courses",courseRouter);  // redirect to courseRouter route
+bootcampRouter.use("/:bootcampId/courses/add",[protect,courseRouter]);  //protect middleware token
 
-export  {router}
+bootcampRouter.route("/")
+.get(advanceResult(BootCamps,"courses"),getBootCamps)
+.post(protect,authorize("admin", "publisher"),createBootcamp)
+
+bootcampRouter.route("/:id")
+.get(getSinglBootCamps)
+.put(protect,authorize("admin", "publisher"),updateBootcamp)
+.delete(protect,authorize("admin", "publisher"),deleteBootcamp); 
+
+bootcampRouter.route("/radius/:zipcode/:distance")
+.get(getBootcampsInRadius);
+
+
+bootcampRouter.route("/:id/photo-upload")
+.put(protect,authorize("admin", "publisher"),upload.single("image"),uploadPhoto); //
+
+export  default bootcampRouter

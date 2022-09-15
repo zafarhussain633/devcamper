@@ -6,7 +6,6 @@ const options = {
     formatter: null // 'gpx', 'string', ...
   };
 
-
   const geocoder = NodeGeocoder(options);
 
   const getGeolocation =async  (address)=>{

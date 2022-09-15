@@ -2,7 +2,6 @@ import fs from "fs"
 import 'dotenv/config'
 import connectDB from "./config/db.js"
 import BootCamps from "./models/Bootcamp.js"
-
 await connectDB();
 
 
