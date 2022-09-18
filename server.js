@@ -7,6 +7,7 @@ import rootRouter from "./routes/index.js"
 import cors from "cors"
 import errorHadler from "./middleware/error.js"
 
+
 //Connect to data base 
 connectDB();
 
@@ -15,9 +16,9 @@ const app = express();
 //Body parser for req.body
 app.use(express.json())
 
+
 // set static path
 app.use(express.static('public'));
-
 
 if(process.env.NODE_ENV ==="development"){ //it will only run in devlopement
     app.use(morgan("dev")) //from morgan third party loggger
