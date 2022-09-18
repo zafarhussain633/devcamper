@@ -209,7 +209,7 @@ const updateUser = asyncHandler(async (req, res, next) => {
         if(!body.newPassword){
             return next(new ErrorResponse("Please add your new password", 410));
         }
-        validation.validateBeforeSave=true
+         validation.validateBeforeSave=true
         const isPasswordCorrect = await user.matchPassword(body.password);  // matchPassword is model custom method.
 
         if (!isPasswordCorrect) {
@@ -217,6 +217,8 @@ const updateUser = asyncHandler(async (req, res, next) => {
         }
         console.log("yes")
         user.password = body.newPassword; 
+    }else{
+        validation.validateBeforeSave=false
     }
 
     if(body.name){
@@ -224,12 +226,10 @@ const updateUser = asyncHandler(async (req, res, next) => {
     }
 
     if(body.email){
-        validation.validateBeforeSave=true
         user.email = body.email;
     }
 
     await user.save(validation);
-    validation.validateBeforeSave=false
     res.status(200).json({success: true, message:"profile updated"});
 
 })
