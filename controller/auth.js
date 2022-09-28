@@ -14,8 +14,6 @@ const ragisterUser = asyncHandler(async (req, res, next) => {
     const token = await user.getSignedJwtToken();
     const messsage = "User created successfully"
 
-
-
     sendResponseToken(token, res, messsage);
 
 })
@@ -27,7 +25,6 @@ const ragisterUser = asyncHandler(async (req, res, next) => {
 // @access: private 
 const loginUser = asyncHandler(async (req, res, next) => {
     const { password, email } = req.body;
-    console.log(password, email)
 
     if (!password || !email) {
         return next(new ErrorResponse("Invalid credentials", 400));
@@ -60,8 +57,6 @@ const sendResponseToken = (token, res, msg) => {
     if (process.env.NODE_ENV === "development") {
         options.secure = false;
     }
-
-    console.log(options);
     res.status(200).cookie('token', token, options).json({ success: true, msg, token })
 }
 
@@ -70,7 +65,7 @@ const sendResponseToken = (token, res, msg) => {
 // desc:    get user about user  
 // @route:  GET  /api/v1/auth/me  
 // @access: private 
-const getMe = asyncHandler(async (req, res, next) => {
+const getMe = asyncHandler(async (req, res) => {
     const { id } = req.user;
     const aboutMe = await User.findById(id);
     res.status(200).json({ success: true, data: aboutMe })
@@ -78,11 +73,11 @@ const getMe = asyncHandler(async (req, res, next) => {
 
 
 // desc:    fro reset password 
-// @route:  GET  /api/v1/auth/reset-password  
+// @route:  post  /api/v1/auth/reset-password  
 // @access: private 
 const resetPassword = asyncHandler(async (req, res, next) => {
 
-    const user = await User.findOne({ email: req.body.email });
+    const user = await User.findOne({ email: req.body.email })
 
     if (!user) {
         return next(new ErrorResponse("Email not found", 404));
@@ -90,6 +85,8 @@ const resetPassword = asyncHandler(async (req, res, next) => {
 
     const otp = await user.setResetToken();
     await user.save({ validateBeforeSave: false });
+
+    console.log(user.email)
 
     const msg = {
         from: {
@@ -105,13 +102,20 @@ const resetPassword = asyncHandler(async (req, res, next) => {
     </div>`
     }
 
+    //await sendEmail(msg);  // send email using node mailder 
+    const emailSent = await sendMailUsingSendGrid(msg);   // send mail using sendgrid
 
-      //await sendEmail(msg);
-      await sendMailUsingSendGrid(msg);
+    if (!emailSent) {
+        return next(new ErrorResponse("Failed to send email something went wrong", 503));
+    }
+
     res.status(200).json({ success: true, msg: "OTP sent to email" })
 
 })
 
+// desc:    for reset password 
+// @route:  GET  api/v1/auth/verify-otp  
+// @access: private 
 
 const verifyOtp = asyncHandler(async (req, res, next) => {
     const { otp, email } = req.body;
@@ -137,15 +141,19 @@ const verifyOtp = asyncHandler(async (req, res, next) => {
         await user.update({ resetOtpVerified: true })
     }
 
-    await user.save({ validateBeforeSave: false });
+    await user.save({ validateBeforeSave: false });  //it will ignore pre save hooks in user model
     res.status(200).json({ success: true, message: "Otp has been successfully verified." });
 
 })
 
 
+// desc:    for reset password 
+// @route:  GET  api/v1/auth/save-password
+// @access: private 
 const savePassword = asyncHandler(async (req, res, next) => {
     const { email, password, confirmPassowrd } = req.body;
     const user = await User.findOne({ email: email });
+    const isOtpExpired = user.resetPasswordExpires < Date.now()
 
     if (!password || !email || !confirmPassowrd) {
         return next(new ErrorResponse("email , password , confirmPassowrd are required to reset password", 404));
@@ -163,13 +171,72 @@ const savePassword = asyncHandler(async (req, res, next) => {
         return next(new ErrorResponse("Otp is not verified", 400));
     }
 
-    await user.update({ password })
-    const token = await user.getSignedJwtToken();
-    await user.update({ resetOtpVerified: null, resetPasswordExpires: null, resetPasswordToken: "" })
+    if (isOtpExpired) {
+        await user.update({ resetOtpVerified: false })
+        return next(new ErrorResponse("Otp has been expired please resend Otp", 410));
+    }
+
+    user.password = password;
+    user.resetOtpVerified = null;
+    user.resetPasswordExpires = null;
+    user.resetPasswordToken = "";
+
+
     await user.save();
 
+    const token = await user.getSignedJwtToken();
     const msg = "Your password has been changed"
     sendResponseToken(token, res, msg);
 })
 
-export { ragisterUser, loginUser, getMe, resetPassword, verifyOtp, savePassword }
+
+// desc:    for reset password 
+// @route:  GET  api/v1/auth/save-password
+// @access: private
+const updateUser = asyncHandler(async (req, res, next) => {
+
+    const { file, body } = req;    // here file is formdata image 
+    let user = await User.findOne({id:req.user.id}).select("+password")  // geting id from token & and adding select passsowrd to add password in this scope so that matchpassword can work
+    const validation = { validateBeforeSave: false }  // we have selected password field so we have to allow validation for password field
+
+    if (file) {
+        user.profilePicture = file.filename
+    }
+
+    console.log(body)
+
+    if (body.password) {
+        if(!body.newPassword){
+            return next(new ErrorResponse("Please add your new password", 410));
+        }
+         validation.validateBeforeSave=true
+        const isPasswordCorrect = await user.matchPassword(body.password);  // matchPassword is model custom method.
+
+        if (!isPasswordCorrect) {
+            return next(new ErrorResponse("You current password is incorrect", 410));
+        }
+        console.log("yes")
+        user.password = body.newPassword; 
+    }else{
+        validation.validateBeforeSave=false
+    }
+
+    if(body.name){
+       user.name = body.name;
+    }
+
+    if(body.email){
+        user.email = body.email;
+    }
+
+    await user.save(validation);
+    res.status(200).json({success: true, message:"profile updated"});
+
+})
+
+
+
+
+
+
+export { ragisterUser, loginUser, getMe, resetPassword, verifyOtp, savePassword, updateUser }

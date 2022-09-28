@@ -5,6 +5,7 @@ import ErrorResponse from "./../util/errorResponse.js";
 import {generateOtp} from "./../helpers/auth.js";
 
 const userSchema = new mongoose.Schema({
+  profilePicture: String,
   name: {
     type: String,
     required: [true, "please enter name"],
@@ -21,11 +22,11 @@ const userSchema = new mongoose.Schema({
     enum: ['user', 'publisher'],
     default: 'user',
 
-  },
+  },  
   password: {
     type: String,
     required: [true, "please enter password"],
-    minlength: [8, "password must be at least 6 characters"],
+    minlength: [8, "password must be at least 8 characters"],
     match: [
       /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
       "Password must be Minimum eight characters, at least one uppercase letter, one lowercase letter, one number and one special character"
@@ -59,6 +60,7 @@ userSchema.pre("save", function async (next) {
      next();
   }
   const hashpassword = bcrypt.hashSync(this.password, 10);
+ 
   this.password = hashpassword
   next();
 });
@@ -82,6 +84,8 @@ userSchema.methods.setResetToken =  async function () {
 }
 
 userSchema.methods.matchPassword = async function (password) {
+  console.log(this.password,"sss")
+
   const isMatch = await bcrypt.compare(password, this.password);
   return isMatch;
 }

@@ -1,6 +1,7 @@
 import nodemailer from "nodemailer";
 import sgMail from "@sendgrid/mail"
 
+
 const getCookiesExpireTime = () => {
   let expireLimit = process.env.JWT_TOKEN_EXPIRATION.replace("d", "");
   const expiresIn = new Date(Date.now() + expireLimit * 24 * 60 * 60 * 1000);
@@ -8,7 +9,7 @@ const getCookiesExpireTime = () => {
 }
 
 const generateOtp = () => {
-  let otp = Math.floor(Math.random()*9000+1000); // will gegrate 4 digit
+  let otp = Math.floor(Math.random()*9000+1000); // will generate 4 digit
   return otp.toString();
 }
 
@@ -39,10 +40,11 @@ const sendEmail = async (option) => {
 const sendMailUsingSendGrid = async (msg) => {
   sgMail.setApiKey(process.env.SENDGRID_API_KEY)
   try {
-    let res = await sgMail.send(msg)
-    console.log(res)    
+    await sgMail.send(msg)   
+    return true
   } catch (err) {
-    console.error(err)
+    console.error("sendgrid email error:",err.message)
+    return false
   }
 
 }
