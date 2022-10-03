@@ -18,7 +18,6 @@ const protect = asyncHandler((req, res, next) => {
         if (err) {
             next(new ErrorResponse("Invalid token", 401));
         } else {
-            console.log(decoded) // bar
             req.user = await User.findById(decoded.id)
         }
         next();
@@ -27,6 +26,7 @@ const protect = asyncHandler((req, res, next) => {
 
 
 const authorize = (...roles) => (req, res, next) => {
+    
     if (roles.includes(req.user.role)) {
         next();
     } else {
