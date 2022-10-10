@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import ErrorResponse from "./../util/errorResponse.js";
-import {generateOtp} from "./../helpers/auth.js";
+import { generateOtp } from "./../helpers/auth.js";
 
 const userSchema = new mongoose.Schema({
   profilePicture: String,
@@ -19,10 +19,10 @@ const userSchema = new mongoose.Schema({
   },
   role: {
     type: String,
-    enum: ['user', 'publisher',"admin"],
+    enum: ['user', 'publisher', "admin"],
     default: 'user',
 
-  },  
+  },
   password: {
     type: String,
     required: [true, "please enter password"],
@@ -36,12 +36,9 @@ const userSchema = new mongoose.Schema({
   resetPasswordToken: String,
   resetPasswordExpires: Date,
   resetOtpVerified: Boolean,
-  createdAt: {
-    type: Date,
-    default: Date.now
-  }
-
-});
+},
+  { timestamps: true }
+);
 
 
 // for checking emal exit or not 
@@ -54,13 +51,13 @@ userSchema.post('save', function (error, doc, next) {
 });
 
 
-userSchema.pre("save", function async (next) {
+userSchema.pre("save", function async(next) {
 
-  if(!this.isModified("password")){
-     next();
+  if (!this.isModified("password")) {
+    next();
   }
   const hashpassword = bcrypt.hashSync(this.password, 10);
- 
+
   this.password = hashpassword
   next();
 });
@@ -75,24 +72,24 @@ userSchema.methods.getSignedJwtToken = async function () {
   return token;
 }
 
-userSchema.methods.setResetToken =  async function () {
+userSchema.methods.setResetToken = async function () {
   let otp = generateOtp();
-  const hashResetToken = bcrypt.hashSync(otp,10); 
-  this.resetPasswordToken =  hashResetToken; // adding encrypted to database for security.
-  this.resetPasswordExpires = Date.now()+10*60*1000;
+  const hashResetToken = bcrypt.hashSync(otp, 10);
+  this.resetPasswordToken = hashResetToken; // adding encrypted to database for security.
+  this.resetPasswordExpires = Date.now() + 10 * 60 * 1000;
   return otp; // return for sending to email
 }
 
 userSchema.methods.matchPassword = async function (password) {
-  console.log(this.password,"sss")
+  console.log(this.password, "sss")
 
   const isMatch = await bcrypt.compare(password, this.password);
   return isMatch;
 }
 
 userSchema.methods.matchResetToken = async function (otp) {
-  const isMatch = await bcrypt.compare(otp,this.resetPasswordToken); 
-  return isMatch;   
+  const isMatch = await bcrypt.compare(otp, this.resetPasswordToken);
+  return isMatch;
 }
 
 
