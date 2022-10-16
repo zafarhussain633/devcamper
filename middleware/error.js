@@ -4,7 +4,7 @@ const errorHadler  = (err, req, res, next)=>{
     let error =err
     //Mongoose bad objectid
     if(err.name === "CastError"){
-        const message = `bootcamp not found with id ${error.value}`
+        const message = `resource not found with id ${error.value}`
         error = new ErrorResponse(message,404)
     }
 

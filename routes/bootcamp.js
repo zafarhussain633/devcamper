@@ -13,7 +13,7 @@ bootcampRouter.use("/:bootcampId/courses",courseRouter);  // redirect to courseR
 bootcampRouter.use("/:bootcampId/courses/add",[protect,courseRouter]);  //protect middleware token
 
 bootcampRouter.route("/")
-.get(advanceResult(BootCamps,"courses"),getBootCamps)
+.get(advanceResult(BootCamps,"courses Reviews"),getBootCamps)  // here is courses and review are populate
 .post(protect,authorize("admin", "publisher"),createBootcamp)
 
 bootcampRouter.route("/:id")

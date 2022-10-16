@@ -122,6 +122,7 @@ const BootCampSchema = new mongoose.Schema({
 
 BootCampSchema.pre("remove", async function(next){  // this will delete all the courses associated with this bootcamp
    await this.model("Courses").deleteMany({bootcamp:this.id})
+   await this.model("Reviews").deleteMany({asscociatedBootcampId:this.id})
    next();
 })
 
@@ -159,6 +160,27 @@ BootCampSchema.virtual('courses',{
     foreignField:"bootcamp",
     justOne:false,
 })
+
+BootCampSchema.virtual('Reviews',{
+    ref:'Reviews',
+    localField:"_id",
+    foreignField:"asscociatedBootcampId",
+    justOne:false,
+})
+
+
+// BootCampSchema.pre("find", async function (next) {
+//     let bootcampRatings  = await this.model("Reviews").find({asscociatedBootcampId: this.id}).select("rating");
+//     let bootcampRatingList =  bootcampRatings.map(res=>res.rating);
+
+//     if(bootcampRatingList.length>0){
+//         const avgRating  =  getAverageCost(bootcampRatingList)
+//         this.averageRating =avgRating
+//     }
+
+//     next();
+// })
+
 
 
 export default mongoose.model("BootCamps", BootCampSchema)

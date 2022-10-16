@@ -15,7 +15,7 @@ export const getBootCamps= asyncHandler(async(req,res, next)=>{
 // @route:  GET  /api/v1/bootcamps/:id
 // @access: public   
 export const getSinglBootCamps= asyncHandler(async(req,res, next)=>{
-    const bootcamps = await BootCamps.findById(req.params.id);
+    const bootcamps = await BootCamps.findById(req.params.id).populate("courses Reviews") // multiple populate
     if(!bootcamps){ 
       next(new ErrorResponse(`Bootcamps not found with id ${req.params.id}`,404))
     }
@@ -78,8 +78,6 @@ export const updateBootcamp= asyncHandler( async(req,res, next)=>{
 export const deleteBootcamp= asyncHandler(async(req,res, next)=>{
     const requestId = req.user.id  // here request id is coming from protect middleware
     const bootcamp =await BootCamps.findById(req.params.id);
-    
-    console.log(bootcamp,"bootcamp");
 
     if(!bootcamp){ 
     return  next(new ErrorResponse(`Failed to delete Bootcamp or not found with id ${req.params.id}`,400))
@@ -143,6 +141,3 @@ export const uploadPhoto =asyncHandler( async (req, res,next) => {
 })
 
 
-export const userLogin=async (req,res,next)=>{
-  res.status(200).json({sucess:true, msg:`development under processs`}) 
-}
